@@ -10,11 +10,14 @@ def BoxBlur_random(img):
     return BoxBlur(img, kerneldim)
 
 def BoxBlur(img, dim):
-    imgarray = np.array(img, dtype="float32")
     kernel = BoxKernel(dim)
-    convolved = convolve2d(imgarray, kernel, mode='same', fillvalue=255.0).astype("uint8")
-    img = Image.fromarray(convolved)
-    return img
+    r_ = img[:, :, 0]
+    g_ = img[:, :, 1]
+    b_ = img[:, :, 2]
+    convolved_r = convolve2d(r_, kernel, mode='same', fillvalue=255.0).astype("uint8")
+    convolved_g = convolve2d(g_, kernel, mode='same', fillvalue=255.0).astype("uint8")
+    convolved_b = convolve2d(b_, kernel, mode='same', fillvalue=255.0).astype("uint8")
+    return np.stack([convolved_r, convolved_g, convolved_b], axis=2)
 
 def BoxKernel(dim):
     kernelwidth = dim

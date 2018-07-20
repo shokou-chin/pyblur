@@ -5,9 +5,11 @@ from PIL import Image
 from scipy.signal import convolve2d
 from skimage.draw import line
 
-from LineDictionary import LineDictionary
+from .LineDictionary import LineDictionary
 
-lineLengths =[3,5,7,9]
+# lineLengths =[3,5,7,9]
+lineLengths =[3,5]
+
 lineTypes = ["full", "right", "left"]
 
 lineDict = LineDictionary()
@@ -21,11 +23,14 @@ def LinearMotionBlur_random(img):
     return LinearMotionBlur(img, lineLength, lineAngle, lineType)
 
 def LinearMotionBlur(img, dim, angle, linetype):
-    imgarray = np.array(img, dtype="float32")
     kernel = LineKernel(dim, angle, linetype)
-    convolved = convolve2d(imgarray, kernel, mode='same', fillvalue=255.0).astype("uint8")
-    img = Image.fromarray(convolved)
-    return img
+    r_ = img[:, :, 0]
+    g_ = img[:, :, 1]
+    b_ = img[:, :, 2]
+    convolved_r = convolve2d(r_, kernel, mode='same', fillvalue=255.0).astype("uint8")
+    convolved_g = convolve2d(g_, kernel, mode='same', fillvalue=255.0).astype("uint8")
+    convolved_b = convolve2d(b_, kernel, mode='same', fillvalue=255.0).astype("uint8")
+    return np.stack([convolved_r, convolved_g, convolved_b], axis=2)
 
 def LineKernel(dim, angle, linetype):
     kernelwidth = dim

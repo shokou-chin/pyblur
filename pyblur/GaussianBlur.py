@@ -1,7 +1,8 @@
 import numpy as np
-from PIL import ImageFilter
+from PIL import Image,ImageFilter
 
-gaussianbandwidths = [0.5, 1, 1.5, 2, 2.5, 3, 3.5]
+# gaussianbandwidths = [0.5, 1, 1.5, 2, 2.5, 3, 3.5]
+gaussianbandwidths = [0.5, 1, 1.5]
 
 def GaussianBlur_random(img):
     gaussianidx = np.random.randint(0, len(gaussianbandwidths))
@@ -9,5 +10,6 @@ def GaussianBlur_random(img):
     return GaussianBlur(img, gaussianbandwidth)
 
 def GaussianBlur(img, bandwidth):
+    img = Image.fromarray(img, 'RGB')
     img = img.filter(ImageFilter.GaussianBlur(bandwidth))
     return img
