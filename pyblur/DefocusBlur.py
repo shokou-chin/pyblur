@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from PIL import Image
 from scipy.signal import convolve2d
 from skimage.draw import circle
 
@@ -12,17 +11,20 @@ def DefocusBlur_random(img):
     return DefocusBlur(img, kerneldim)
 
 def DefocusBlur(img, dim):
-    imgarray = np.array(img, dtype="float32")
     kernel = DiskKernel(dim)
-    convolved = convolve2d(imgarray, kernel, mode='same', fillvalue=255.0).astype("uint8")
-    img = Image.fromarray(convolved)
-    return img
+    r_ = img[:,:,0]
+    g_ = img[:,:,1]
+    b_ = img[:,:,2]
+    convolved_r = convolve2d(r_, kernel, mode='same', fillvalue=255.0).astype("uint8")
+    convolved_g = convolve2d(g_, kernel, mode='same', fillvalue=255.0).astype("uint8")
+    convolved_b = convolve2d(b_, kernel, mode='same', fillvalue=255.0).astype("uint8")
+    return np.stack([convolved_r, convolved_g, convolved_b], axis=2)
 
 
 def DiskKernel(dim):
     kernelwidth = dim
     kernel = np.zeros((kernelwidth, kernelwidth), dtype=np.float32)
-    circleCenterCoord = dim / 2
+    circleCenterCoord = dim // 2
     circleRadius = circleCenterCoord +1
     
     rr, cc = circle(circleCenterCoord, circleCenterCoord, circleRadius)
@@ -34,6 +36,7 @@ def DiskKernel(dim):
     normalizationFactor = np.count_nonzero(kernel)
     kernel = kernel / normalizationFactor
     return kernel
+
 
 def Adjust(kernel, kernelwidth):
     kernel[0,0] = 0
